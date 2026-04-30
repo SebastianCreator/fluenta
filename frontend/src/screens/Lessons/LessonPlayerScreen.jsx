@@ -35,6 +35,9 @@ export default function LessonPlayerScreen() {
   const [clozeAnswers, setClozeAnswers] = useState([]);
   const [scramblePool, setScramblePool] = useState([]);
   const [scrambleSelected, setScrambleSelected] = useState([]);
+  const [imageMatchPairs, setImageMatchPairs] = useState({});
+  const [selectedLabel, setSelectedLabel] = useState(null);
+  const [imageMatchLabels, setImageMatchLabels] = useState([]);
 
   useEffect(() => {
     lessonsAPI.getById(id)
@@ -60,6 +63,15 @@ export default function LessonPlayerScreen() {
       setScramblePool(words);
       setScrambleSelected([]);
     }
+    if (exercise.type === 'image-match') {
+      const isObjectMatch = exercise.correctAnswer && typeof exercise.correctAnswer === 'object' && !Array.isArray(exercise.correctAnswer);
+      if (isObjectMatch) {
+        setImageMatchPairs({});
+        setSelectedLabel(null);
+        const labels = Object.keys(exercise.correctAnswer);
+        setImageMatchLabels([...labels].sort(() => Math.random() - 0.5));
+      }
+    }
   }, [currentIdx, exercise]);
 
   const checkAnswer = useCallback((userAns) => {
@@ -70,6 +82,10 @@ export default function LessonPlayerScreen() {
         (userAns[i] || '').toLowerCase().trim() === expected.toLowerCase().trim()
       );
     }
+    if (exercise.type === 'image-match' && typeof correct === 'object' && !Array.isArray(correct) && correct !== null) {
+      const userPairs = userAns || {};
+      return Object.entries(correct).every(([label, image]) => userPairs[image] === label);
+    }
     if (Array.isArray(correct)) return correct.map(s => s.toLowerCase().trim()).includes((userAns || '').toLowerCase().trim());
     if (typeof correct === 'boolean') return userAns === correct;
     if (exercise.type === 'mnemonic' || exercise.type === 'task-based' || exercise.type === 'essay') return true; // open ended
@@ -79,12 +95,20 @@ export default function LessonPlayerScreen() {
   const currentAnswer = () => {
     if (exercise?.type === 'cloze') return clozeAnswers;
     if (exercise?.type === 'scramble') return scrambleSelected.join(' ');
+    if (exercise?.type === 'image-match') {
+      const isObjectMatch = exercise?.correctAnswer && typeof exercise.correctAnswer === 'object' && !Array.isArray(exercise.correctAnswer);
+      if (isObjectMatch) return imageMatchPairs;
+    }
     return answer;
   };
 
   const isAnswerEmpty = () => {
     if (exercise?.type === 'cloze') return clozeAnswers.some(a => !a.trim());
     if (exercise?.type === 'scramble') return scrambleSelected.length === 0;
+    if (exercise?.type === 'image-match') {
+      const isObjectMatch = exercise?.correctAnswer && typeof exercise.correctAnswer === 'object' && !Array.isArray(exercise.correctAnswer);
+      if (isObjectMatch) return Object.keys(imageMatchPairs).length !== (exercise.options?.length || 0);
+    }
     return answer === '' && answer !== false;
   };
 
@@ -98,7 +122,7 @@ export default function LessonPlayerScreen() {
 
     if (correct) toast.success('¡Correcto! 🎉', { duration: 1200, icon: '✅' });
     else toast.error(`Respuesta: ${Array.isArray(exercise?.correctAnswer) ? exercise.correctAnswer.join(' / ') : exercise?.correctAnswer?.toString()}`, { duration: 2500, icon: '❌' });
-  }, [submitted, exercise, currentIdx, startTime, checkAnswer, answer, clozeAnswers, scrambleSelected]);
+  }, [submitted, exercise, currentIdx, startTime, checkAnswer, answer, clozeAnswers, scrambleSelected, imageMatchPairs]);
 
   const handleNext = useCallback(async () => {
     const isLast = currentIdx >= total - 1;
@@ -124,6 +148,8 @@ export default function LessonPlayerScreen() {
     } else {
       setCurrentIdx(i => i + 1);
       setAnswer('');
+      setImageMatchPairs({});
+      setSelectedLabel(null);
       setSubmitted(false);
       setIsCorrect(null);
     }
@@ -303,29 +329,110 @@ export default function LessonPlayerScreen() {
 
           {/* ── IMAGE-MATCH ── */}
           {exercise?.type === 'image-match' && (
-            <div className={styles.imageMatchWrap}>
+            <div>
               {(() => {
                 const isObjectMatch = exercise.correctAnswer && typeof exercise.correctAnswer === 'object' && !Array.isArray(exercise.correctAnswer);
-                const labels = isObjectMatch ? Object.keys(exercise.correctAnswer) : null;
-                return exercise.options?.map((opt, i) => {
-                  const label = isObjectMatch && labels ? labels[i] : null;
+                
+                if (isObjectMatch) {
+                  const correctPairs = exercise.correctAnswer;
                   return (
-                    <motion.button
-                      key={i}
-                      className={[
-                        styles.imageMatchOption,
-                        answer === opt ? styles.optionSelected : '',
-                        submitted && opt === exercise.correctAnswer ? styles.optionCorrect : '',
-                        submitted && answer === opt && answer !== exercise.correctAnswer ? styles.optionWrong : '',
-                      ].join(' ')}
-                      onClick={() => !submitted && setAnswer(opt)}
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      <span className={styles.imageMatchEmoji}>{opt}</span>
-                      {label && <span className={styles.imageMatchLabel}>{label}</span>}
-                    </motion.button>
+                    <div className={styles.imageMatchObjectWrap}>
+                      <p className={styles.imageMatchHint}>
+                        {selectedLabel 
+                          ? `Seleccionado: "${selectedLabel}". Haz clic en la imagen que le corresponde.` 
+                          : 'Haz clic en un texto para seleccionarlo, luego en la imagen que le corresponde.'}
+                      </p>
+                      <div className={styles.imageMatchLabels}>
+                        {imageMatchLabels.map(label => {
+                          const isMatched = Object.values(imageMatchPairs).includes(label);
+                          return (
+                            <motion.button
+                              key={label}
+                              className={[
+                                styles.imageMatchLabelBtn,
+                                selectedLabel === label ? styles.labelSelected : '',
+                                isMatched ? styles.labelMatched : '',
+                              ].join(' ')}
+                              onClick={() => {
+                                if (submitted) return;
+                                if (isMatched) {
+                                  const img = Object.keys(imageMatchPairs).find(k => imageMatchPairs[k] === label);
+                                  if (img) {
+                                    setImageMatchPairs(prev => {
+                                      const next = { ...prev };
+                                      delete next[img];
+                                      return next;
+                                    });
+                                  }
+                                } else {
+                                  setSelectedLabel(prev => prev === label ? null : label);
+                                }
+                              }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {label}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+                      <div className={styles.imageMatchImages}>
+                        {exercise.options?.map((opt, i) => {
+                          const expectedLabel = Object.entries(correctPairs).find(([l, img]) => img === opt)?.[0];
+                          const assignedLabel = imageMatchPairs[opt];
+                          return (
+                            <motion.button
+                              key={`img-${i}`}
+                              className={[
+                                styles.imageMatchOption,
+                                assignedLabel ? styles.optionSelected : '',
+                                submitted && assignedLabel && assignedLabel === expectedLabel ? styles.optionCorrect : '',
+                                submitted && assignedLabel && expectedLabel && assignedLabel !== expectedLabel ? styles.optionWrong : '',
+                              ].join(' ')}
+                              onClick={() => {
+                                if (submitted) return;
+                                if (assignedLabel) {
+                                  setImageMatchPairs(prev => {
+                                    const next = { ...prev };
+                                    delete next[opt];
+                                    return next;
+                                  });
+                                } else if (selectedLabel) {
+                                  setImageMatchPairs(prev => ({ ...prev, [opt]: selectedLabel }));
+                                  setSelectedLabel(null);
+                                }
+                              }}
+                              whileTap={{ scale: 0.97 }}
+                            >
+                              <span className={styles.imageMatchEmoji}>{opt}</span>
+                              {assignedLabel && <span className={styles.imageMatchAssigned}>{assignedLabel}</span>}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   );
-                });
+                } else {
+                  // String format: single-select options (like colors, signs)
+                  return (
+                    <div className={styles.imageMatchWrap}>
+                      {exercise.options?.map((opt, i) => (
+                        <motion.button
+                          key={i}
+                          className={[
+                            styles.imageMatchOption,
+                            answer === opt ? styles.optionSelected : '',
+                            submitted && opt === exercise.correctAnswer ? styles.optionCorrect : '',
+                            submitted && answer === opt && answer !== exercise.correctAnswer ? styles.optionWrong : '',
+                          ].join(' ')}
+                          onClick={() => !submitted && setAnswer(opt)}
+                          whileTap={{ scale: 0.97 }}
+                        >
+                          <span className={styles.imageMatchEmoji}>{opt}</span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  );
+                }
               })()}
             </div>
           )}
@@ -539,4 +646,3 @@ export default function LessonPlayerScreen() {
     </div>
   );
 }
-
