@@ -10,10 +10,15 @@ const { Evaluation, Language } = require('../models/index');
 // ── NUEVOS datos con métodos activos ──────────────────
 const lessons = [
   ...require('../data/lessons/en_A1_active'),
+  ...require('../data/lessons/fr_A1_active'),
+  ...require('../data/lessons/de_A1_active'),
+  ...require('../data/lessons/it_A1_active'),
+  ...require('../data/lessons/pt_A1_active'),
 ];
 
 const evaluations = [
   ...require('../data/evaluations/evaluations_active'),
+  ...require('../data/evaluations/all_evaluations'),
 ];
 
 const languages = [
