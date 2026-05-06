@@ -212,10 +212,10 @@ export default function EvaluationPlayerScreen() {
 
           <p className={styles.questionPrompt}>{q?.prompt}</p>
 
-          {/* Multiple choice */}
-          {q?.type === 'multiple-choice' && (
+          {/* Multiple choice / conversation-sim / image-match */}
+          {['multiple-choice', 'conversation-sim', 'image-match'].includes(q?.type) && (
             <div className={styles.evalOptions}>
-              {q.options.map((opt, i) => (
+              {(q.options || []).map((opt, i) => (
                 <button
                   key={i}
                   className={[styles.evalOption, answers[currentQ] === opt ? styles.evalOptionSel : ''].join(' ')}
@@ -243,8 +243,8 @@ export default function EvaluationPlayerScreen() {
             </div>
           )}
 
-          {/* Fill-in / Translation / Essay / Cloze */}
-          {['fill-in-blank', 'translation', 'essay', 'interleaved'].includes(q?.type) && (
+          {/* Fill-in / Translation / Essay / Cloze / Task-based / Scramble / Shadowing */}
+          {['fill-in-blank', 'translation', 'essay', 'interleaved', 'cloze', 'task-based', 'shadowing', 'scramble'].includes(q?.type) && (
             <input
               type="text"
               className={styles.evalInput}
