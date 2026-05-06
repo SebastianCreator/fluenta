@@ -135,14 +135,27 @@ export default function EvaluationPlayerScreen() {
         )}
         <div className={styles.resultBreakdown}>
           <div className={styles.breakdownTitle}>Desglose por respuesta</div>
-          {(result.feedback || []).slice(0, 8).map((f, i) => (
-            <div key={i} className={styles.breakdownRow}>
-              <span>Pregunta {i + 1}</span>
-              <span style={{ color: f.correct ? 'var(--accent-emerald)' : 'var(--accent-rose)' }}>
-                {f.correct ? '✓ Correcta' : '✗ Incorrecta'} ({f.points || 0} pts)
-              </span>
-            </div>
-          ))}
+          {(result.feedback || []).map((f, i) => {
+            const q = questions[i];
+            return (
+              <div key={i} className={styles.breakdownRow}>
+                <span>Pregunta {i + 1}</span>
+                <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:2 }}>
+                  <span style={{ color: f.correct ? 'var(--accent-emerald)' : 'var(--accent-rose)' }}>
+                    {f.correct ? '✓ Correcta' : '✗ Incorrecta'} ({f.points || 0} pts)
+                  </span>
+                  {!f.correct && q?.correctAnswer && (
+                    <span style={{ fontSize:11, color:'var(--text-muted)' }}>
+                      ✓ Respuesta: <strong>{typeof q.correctAnswer === 'object' ? JSON.stringify(q.correctAnswer) : q.correctAnswer}</strong>
+                    </span>
+                  )}
+                  {!f.correct && q?.type === 'dictation' && (
+                    <span style={{ fontSize:11, color:'var(--text-muted)' }}>🔊 Escucha el audio para verificar</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
           <div className={styles.breakdownRow}>
             <span>Total</span>
             <span>{result.score}% — {passed ? 'APROBADO' : 'NO APROBADO'}</span>
@@ -210,7 +223,11 @@ export default function EvaluationPlayerScreen() {
             <div className={styles.passage}>{q.readingPassage}</div>
           )}
 
-          <p className={styles.questionPrompt}>{q?.prompt}</p>
+          <p className={styles.questionPrompt}>
+            {q?.type === 'dictation'
+              ? 'Escucha el audio y escribe lo que escuches...'
+              : q?.prompt}
+          </p>
 
           {/* Multiple choice / conversation-sim / image-match */}
           {['multiple-choice', 'conversation-sim', 'image-match'].includes(q?.type) && (

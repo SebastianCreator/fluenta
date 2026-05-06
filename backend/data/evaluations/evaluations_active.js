@@ -13,13 +13,13 @@ module.exports = [
     questions: [
       // BLOCK 1: Dictation (Listening + Writing)
       { type: 'dictation', section: 'listening', prompt: 'Listen and write: "My name is John. I am twenty-five years old."', correctAnswer: 'My name is John. I am twenty-five years old.', points: 3 },
-      { type: 'dictation', section: 'listening', prompt: 'Listen and write: "She doesn\'t work on Saturdays. She goes to the park."', correctAnswer: 'She doesn\'t work on Saturdays. She goes to the park.', points: 3 },
+      { type: 'dictation', section: 'listening', prompt: 'Listen and write: "She doesn\'t work on Saturdays. She goes to the park."', correctAnswer: 'She does not work on Saturdays. She goes to the park.', points: 3 },
       // BLOCK 2: Scramble (Grammar + Word order)
       { type: 'scramble', section: 'grammar', prompt: 'Rearrange: "from / I / Colombia / am"', correctAnswer: 'I am from Colombia.', points: 2 },
       { type: 'scramble', section: 'grammar', prompt: 'Rearrange: "you / Do / English / speak"', correctAnswer: 'Do you speak English?', points: 2 },
       // BLOCK 3: Cloze (Contextual grammar)
       { type: 'cloze', section: 'vocabulary', prompt: 'Complete: "I have ___ apple. ___ apple is green."', correctAnswer: ['an', 'The'], points: 2 },
-      { type: 'cloze', section: 'grammar', prompt: 'Complete: "She ___ (work) at a hospital. She ___ (not/like) coffee."', correctAnswer: ['works', 'doesn\'t like'], points: 3 },
+      { type: 'cloze', section: 'grammar', prompt: 'Complete: "She ___ (work) at a hospital. She ___ (not/like) coffee."', correctAnswer: ['works', 'does not like'], points: 3 },
       // BLOCK 4: Conversation Simulation
       { type: 'conversation-sim', section: 'speaking', prompt: 'You enter a shop. The clerk says "Can I help you?" What do you say to ask for a black t-shirt?', options: ['I want black t-shirt.', 'I would like a black t-shirt, please.', 'Give me black t-shirt.', 'Black t-shirt.'], correctAnswer: 'I would like a black t-shirt, please.', points: 2 },
       { type: 'conversation-sim', section: 'speaking', prompt: 'Someone says "Nice to meet you!" Best response:', options: ['Yes.', 'Nice to meet you too!', 'Thank you.', 'Goodbye.'], correctAnswer: 'Nice to meet you too!', points: 2 },
