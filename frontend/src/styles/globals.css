@@ -3,21 +3,24 @@
 
 :root {
   /* ── Color Palette ── */
-  --bg-base:        #223265;
-  --bg-surface:     #0F172A;
-  --bg-elevated:    #1E293B;
-  --bg-card:        #162032;
-  --bg-glass:       rgba(30, 41, 59, 0.6);
+  --bg-base:        #F5F7FF;
+  --bg-surface:     #FFFFFF;
+  --bg-elevated:    #F3F6FF;
+  --bg-card:        #FFFFFF;
+  --bg-glass:       rgba(255, 255, 255, 0.75);
 
-  --text-primary:   #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-muted:     #475569;
-  --text-accent:    #818CF8;
 
-  --brand-primary:  #6366F1;
-  --brand-hover:    #4F46E5;
-  --brand-light:    rgba(99,102,241,0.15);
-  --brand-glow:     rgba(99,102,241,0.35);
+  --text-primary:   #0F172A;
+  --text-secondary: #334155;
+  --text-muted:     #64748B;
+  --text-accent:    #4F46E5;
+
+
+  --brand-primary:  #4F46E5;
+  --brand-hover:    #3730A3;
+  --brand-light:    rgba(79,70,229,0.14);
+  --brand-glow:     rgba(79,70,229,0.28);
+
 
   --accent-emerald: #10B981;
   --accent-amber:   #F59E0B;
@@ -90,8 +93,9 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 50% at 20% -20%, rgba(99,102,241,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 120%, rgba(16,185,129,0.07) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 50% at 20% -20%, rgba(79,70,229,0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 120%, rgba(16,185,129,0.10) 0%, transparent 60%);
+
   pointer-events: none;
   z-index: 0;
 }
