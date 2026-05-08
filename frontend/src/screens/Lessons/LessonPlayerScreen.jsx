@@ -20,6 +20,8 @@ export default function LessonPlayerScreen() {
   const [loading, setLoading] = useState(true);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answer, setAnswer] = useState('');
+  const [showListenModel, setShowListenModel] = useState(false);
+
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(null);
   const [results, setResults] = useState([]);
@@ -118,6 +120,9 @@ export default function LessonPlayerScreen() {
     const correct = checkAnswer(ans);
     setIsCorrect(correct);
     setSubmitted(true);
+    if (exercise?.type === 'dictation' && correct) setShowListenModel(true);
+    if (exercise?.type === 'shadowing' && correct) setShowListenModel(true);
+
     setResults(prev => [...prev, { exerciseIndex: currentIdx, correct, userAnswer: ans, timeSeconds: Math.round((Date.now() - startTime) / 1000) }]);
 
     if (correct) toast.success('¡Correcto! 🎉', { duration: 1200, icon: '✅' });
@@ -152,6 +157,8 @@ export default function LessonPlayerScreen() {
       setSelectedLabel(null);
       setSubmitted(false);
       setIsCorrect(null);
+      setShowListenModel(false);
+
     }
   }, [currentIdx, total, results, isCorrect, id, language, startTime]);
 
@@ -161,6 +168,7 @@ export default function LessonPlayerScreen() {
       return () => clearTimeout(t);
     }
   }, [submitted, isCorrect, handleNext]);
+
 
   // ── Helpers ──
   const handlePlayAudio = async (text) => {
@@ -243,8 +251,16 @@ export default function LessonPlayerScreen() {
                 disabled={submitted}
                 autoFocus
               />
+
+              {/* Solo mostrar la respuesta correcta si el usuario acertó */}
+              {submitted && isCorrect && showListenModel && (
+                <p className={styles.transcript} style={{ color: 'var(--accent-emerald)', fontStyle: 'normal' }}>
+                  ✅ Respuesta correcta: {Array.isArray(exercise?.correctAnswer) ? exercise.correctAnswer.join(' / ') : exercise?.correctAnswer?.toString()}
+                </p>
+              )}
             </div>
           )}
+
 
           {/* ── SCRAMBLE ── */}
           {exercise?.type === 'scramble' && (
@@ -468,12 +484,22 @@ export default function LessonPlayerScreen() {
           {exercise?.type === 'shadowing' && (
             <div className={styles.shadowingWrap}>
               <div className={styles.shadowingModel}>
-                <p className={styles.targetText}>{exercise.correctAnswer}</p>
-                <Button variant="secondary" size="sm" onClick={() => handlePlayAudio(exercise.correctAnswer)} disabled={playingAudio}>
-                  {playingAudio ? '🔊 Reproduciendo...' : '🔊 Escuchar modelo'}
-                </Button>
+                {/* Solo mostrar modelo si el usuario acertó */}
+                {submitted && isCorrect && showListenModel && (
+                  <>
+                    <p className={styles.targetText}>{exercise.correctAnswer}</p>
+                    <Button variant="secondary" size="sm" onClick={() => handlePlayAudio(exercise.correctAnswer)} disabled={playingAudio}>
+                      {playingAudio ? '🔊 Reproduciendo...' : '🔊 Escuchar modelo'}
+                    </Button>
+                  </>
+                )}
+
+                {!(submitted && isCorrect && showListenModel) && (
+                  <p className={styles.notSupported}>Escucha el audio y repite la frase.</p>
+                )}
               </div>
               <div className={styles.shadowingRecord}>
+
                 {isSpeechRecognitionSupported() ? (
                   <Button
                     variant={listening ? 'danger' : 'primary'}
