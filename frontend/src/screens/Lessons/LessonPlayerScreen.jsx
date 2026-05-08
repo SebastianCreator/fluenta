@@ -120,8 +120,8 @@ export default function LessonPlayerScreen() {
     const correct = checkAnswer(ans);
     setIsCorrect(correct);
     setSubmitted(true);
-    if (exercise?.type === 'dictation' && correct) setShowListenModel(true);
-    if (exercise?.type === 'shadowing' && correct) setShowListenModel(true);
+    if (exercise?.type === 'dictation' && !correct) setShowListenModel(true);
+    if (exercise?.type === 'shadowing' && !correct) setShowListenModel(true);
 
     setResults(prev => [...prev, { exerciseIndex: currentIdx, correct, userAnswer: ans, timeSeconds: Math.round((Date.now() - startTime) / 1000) }]);
 
@@ -252,8 +252,8 @@ export default function LessonPlayerScreen() {
                 autoFocus
               />
 
-              {/* Solo mostrar la respuesta correcta si el usuario acertó */}
-              {submitted && isCorrect && showListenModel && (
+              {/* Solo mostrar la respuesta correcta si el usuario falló */}
+              {submitted && !isCorrect && showListenModel && (
                 <p className={styles.transcript} style={{ color: 'var(--accent-emerald)', fontStyle: 'normal' }}>
                   ✅ Respuesta correcta: {Array.isArray(exercise?.correctAnswer) ? exercise.correctAnswer.join(' / ') : exercise?.correctAnswer?.toString()}
                 </p>
@@ -484,8 +484,8 @@ export default function LessonPlayerScreen() {
           {exercise?.type === 'shadowing' && (
             <div className={styles.shadowingWrap}>
               <div className={styles.shadowingModel}>
-                {/* Solo mostrar modelo si el usuario acertó */}
-                {submitted && isCorrect && showListenModel && (
+                {/* Solo mostrar modelo si el usuario falló */}
+                {submitted && !isCorrect && showListenModel && (
                   <>
                     <p className={styles.targetText}>{exercise.correctAnswer}</p>
                     <Button variant="secondary" size="sm" onClick={() => handlePlayAudio(exercise.correctAnswer)} disabled={playingAudio}>
@@ -494,7 +494,7 @@ export default function LessonPlayerScreen() {
                   </>
                 )}
 
-                {!(submitted && isCorrect && showListenModel) && (
+                {!(submitted && !isCorrect && showListenModel) && (
                   <p className={styles.notSupported}>Escucha el audio y repite la frase.</p>
                 )}
               </div>
@@ -611,9 +611,13 @@ export default function LessonPlayerScreen() {
           {/* ── VOICE-RECORD ── */}
           {exercise?.type === 'voice-record' && (
             <div className={styles.voiceSection}>
-              <p className={styles.targetText}>{exercise.correctAnswer}</p>
-              {isSpeechSynthesisSupported() && (
-                <Button variant="secondary" size="sm" onClick={() => speak(exercise.correctAnswer, language)}>🔊 Modelo</Button>
+              {submitted && !isCorrect && exercise.correctAnswer && (
+                <>
+                  <p className={styles.targetText}>{exercise.correctAnswer}</p>
+                  {isSpeechSynthesisSupported() && (
+                    <Button variant="secondary" size="sm" onClick={() => speak(exercise.correctAnswer, language)}>🔊 Modelo</Button>
+                  )}
+                </>
               )}
               {isSpeechRecognitionSupported() ? (
                 <Button
