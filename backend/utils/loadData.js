@@ -31,7 +31,7 @@ const languages = [
 
 async function loadData() {
   try {
-    const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/linguaflow';
+    const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/test';
     await mongoose.connect(uri);
     console.log('✅ MongoDB connected');
 

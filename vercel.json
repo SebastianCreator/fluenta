@@ -26,7 +26,7 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://fluenta-api-264a.onrender.com/api"
+    "VITE_API_URL": "https://fluenta-api.onrender.com/api"
   }
 }
 
