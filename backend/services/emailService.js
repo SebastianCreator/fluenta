@@ -1,31 +1,15 @@
 // services/emailService.js
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const logger = require('../utils/logger');
 
-const createTransport = () => {
-  if (process.env.NODE_ENV === 'production') {
-    return nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-    });
-  }
-  // Dev: use ethereal
-  return nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    auth: { user: process.env.DEV_SMTP_USER || '', pass: process.env.DEV_SMTP_PASS || '' }
-  });
-};
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const BASE_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 const FROM = `"Fluenta" <${process.env.FROM_EMAIL || 'noreply@fluenta.app'}>`;
 
 exports.sendVerificationEmail = async (email, name, token) => {
   const url = `${BASE_URL}/verify-email/${token}`;
-  const transporter = createTransport();
-  await transporter.sendMail({
+  await resend.emails.send({
     from: FROM,
     to: email,
     subject: 'Verifica tu cuenta en Fluenta',
@@ -44,8 +28,7 @@ exports.sendVerificationEmail = async (email, name, token) => {
 
 exports.sendPasswordResetEmail = async (email, name, token) => {
   const url = `${BASE_URL}/reset-password/${token}`;
-  const transporter = createTransport();
-  await transporter.sendMail({
+  await resend.emails.send({
     from: FROM,
     to: email,
     subject: 'Restablece tu contraseña — Fluenta',
@@ -61,8 +44,7 @@ exports.sendPasswordResetEmail = async (email, name, token) => {
 };
 
 exports.sendLevelCertificate = async (email, name, language, level) => {
-  const transporter = createTransport();
-  await transporter.sendMail({
+  await resend.emails.send({
     from: FROM,
     to: email,
     subject: `🎓 ¡Felicitaciones! Completaste el nivel ${level} — Fluenta`,

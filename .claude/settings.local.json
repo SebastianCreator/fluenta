@@ -19,7 +19,8 @@
       "Bash(curl -s https://fluenta-api.onrender.com/health)",
       "Bash(curl -s https://fluenta-api.onrender.com/api/languages)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://fluenta-api.onrender.com/)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://fluenta-api.onrender.com/api/languages)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://fluenta-api.onrender.com/api/languages)",
+      "Bash(npm install resend)"
     ]
   }
 }

@@ -12,6 +12,7 @@ import AuthLayout from './components/common/AuthLayout';
 import LoginScreen from './screens/Auth/LoginScreen';
 import RegisterScreen from './screens/Auth/RegisterScreen';
 import ForgotPasswordScreen from './screens/Auth/ForgotPasswordScreen';
+import ResetPasswordScreen from './screens/Auth/ResetPasswordScreen';
 import DashboardScreen from './screens/Dashboard/DashboardScreen';
 import LanguagesScreen from './screens/Dashboard/LanguagesScreen';
 import LessonsScreen from './screens/Lessons/LessonsScreen';
@@ -52,6 +53,7 @@ export default function App() {
         <Route path="/login"    element={<PublicRoute><LoginScreen /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><RegisterScreen /></PublicRoute>} />
         <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordScreen /></PublicRoute>} />
+        <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
       </Route>
 
       {/* ── Protected app routes ── */}

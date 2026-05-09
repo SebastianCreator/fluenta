@@ -120,8 +120,7 @@ export default function LessonPlayerScreen() {
     const correct = checkAnswer(ans);
     setIsCorrect(correct);
     setSubmitted(true);
-    if (exercise?.type === 'dictation' && !correct) setShowListenModel(true);
-    if (exercise?.type === 'shadowing' && !correct) setShowListenModel(true);
+    if ((exercise?.type === 'dictation' || exercise?.type === 'shadowing') && !correct) setShowListenModel(true);
 
     setResults(prev => [...prev, { exerciseIndex: currentIdx, correct, userAnswer: ans, timeSeconds: Math.round((Date.now() - startTime) / 1000) }]);
 
@@ -198,6 +197,8 @@ export default function LessonPlayerScreen() {
   }
 
   const isTextType = ['fill-in-blank', 'translation', 'essay', 'interleaved', 'task-based', 'mnemonic'].includes(exercise?.type);
+  // En listening types NO mostramos el prompt como texto — el usuario debe escucharlo
+  const showPromptAsText = !['dictation', 'shadowing'].includes(exercise?.type);
 
   return (
     <div className={styles.playerPage}>
@@ -219,13 +220,22 @@ export default function LessonPlayerScreen() {
           transition={{ duration: 0.25 }}
         >
           <div className={styles.exerciseType}>{exercise?.type?.replace(/-/g, ' ')}</div>
-          <h2 className={styles.prompt}>{exercise?.prompt}</h2>
-          {exercise?.promptEs && (
-            <p className={styles.promptEs}>🌐 {exercise.promptEs}</p>
+          {showPromptAsText ? (
+            <>
+              <h2 className={styles.prompt}>{exercise?.prompt}</h2>
+              {exercise?.promptEs && (
+                <p className={styles.promptEs}>🌐 {exercise.promptEs}</p>
+              )}
+            </>
+          ) : (
+            /* Listening types: solo mostrar la traducción, NO el texto original */
+            exercise?.promptEs && (
+              <p className={styles.promptEs}>🌐 {exercise.promptEs}</p>
+            )
           )}
 
-          {/* Audio general */}
-          {exercise?.promptAudio && (
+          {/* Audio general — solo si NO es listening type (para no revelar la respuesta) */}
+          {exercise?.promptAudio && showPromptAsText && (
             <button className={styles.audioBtn} onClick={() => speak(exercise.prompt, language)}>🔊 Escuchar</button>
           )}
 

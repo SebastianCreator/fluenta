@@ -148,3 +148,14 @@
 }
 .successBox h3 { font-size: 18px; color: var(--accent-emerald); margin-bottom: 8px; }
 .successBox p  { font-size: 14px; color: var(--text-secondary); }
+
+.errorBox {
+  background: rgba(220,38,38,0.08);
+  border: 1px solid rgba(220,38,38,0.25);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.errorBox h3 { font-size: 18px; color: var(--accent-red); margin-bottom: 8px; }
+.errorBox p  { font-size: 14px; color: var(--text-secondary); }
