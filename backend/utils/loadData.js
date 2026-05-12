@@ -14,6 +14,17 @@ const lessons = [
   ...require('../data/lessons/de_A1_active'),
   ...require('../data/lessons/it_A1_active'),
   ...require('../data/lessons/pt_A1_active'),
+
+  // Added: A2 & B1 for other languages
+  ...require('../data/lessons/fr_A2_active'),
+  ...require('../data/lessons/de_A2_active'),
+  ...require('../data/lessons/it_A2_active'),
+  ...require('../data/lessons/pt_A2_active'),
+
+  ...require('../data/lessons/fr_B1_active'),
+  ...require('../data/lessons/de_B1_active'),
+  ...require('../data/lessons/it_B1_active'),
+  ...require('../data/lessons/pt_B1_active'),
 ];
 
 const evaluations = [

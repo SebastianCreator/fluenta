@@ -1,7 +1,5 @@
 # 🚀 PLAN DE DESPLIEGUE Fluenta
 
-## ✅ TODOS LOS PASOS COMPLETADOS
-
 ### 1️⃣ GitHub Repository ✅
 - Repo: https://github.com/SebastianCreator/Fluenta
 - 5 commits, todo sincronizado
